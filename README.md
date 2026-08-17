@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VaaK - AI-Powered Voice Keyboard
 
 Transform your typing experience with VaaK, an intelligent Android keyboard that brings the power of AI-driven voice dictation to your fingertips.
@@ -201,3 +202,6 @@ We're constantly improving VaaK and value your input:
 - Community: Join our discussions and help improve VaaK
 
 *Note: Some features may require specific Android versions or device capabilities.*
+=======
+# VaakProject
+>>>>>>> 8609259723d5d4657f4a2bbea73912a24af47404
