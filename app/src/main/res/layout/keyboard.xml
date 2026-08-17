@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/background_dark"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <!-- Row 1: Utility Buttons -->
+    <LinearLayout
+        android:id="@+id/utilityRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/settingsButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_settings" />
+
+        <Button
+            android:id="@+id/switchKeyboardButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_keyboard_switch" />
+
+        <Button
+            android:id="@+id/selectAllButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_select" />
+
+        <Button
+            android:id="@+id/copyButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_copy" />
+
+        <Button
+            android:id="@+id/pasteButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_paste" />
+
+        <Button
+            android:id="@+id/yesButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_yes" />
+    </LinearLayout>
+
+    <!-- Row 2: Recording Controls -->
+    <LinearLayout
+        android:id="@+id/recordingRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dictationTimerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textSize="16sp"
+            android:text="@string/status_recording_initial"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/pushToTalkButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_record" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:visibility="gone"
+            android:text="@string/btn_cancel" />
+
+        <Button
+            android:id="@+id/completeDictationButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:visibility="gone"
+            android:text="@string/btn_done" />
+    </LinearLayout>
+
+    <!-- Row 3: Input Controls -->
+    <LinearLayout
+        android:id="@+id/inputRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/languageButton"
+            style="@style/VaakKeyboardButton.Main"
+            tools:text="EN"/>
+
+        <Button
+            android:id="@+id/spaceButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_space" />
+
+        <Button
+            android:id="@+id/backspaceButton"
+            style="@style/VaakKeyboardButton.Main"
+            android:text="@string/btn_delete" />
+
+        <Button
+        android:id="@+id/enterButton"
+        style="@style/VaakKeyboardButton.Main"
+        android:text="@string/btn_enter" />
+    </LinearLayout>
+
+    <!-- Prompt Selection Container -->
+    <LinearLayout
+        android:id="@+id/promptsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_marginTop="2dp">
+        
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            
+            <LinearLayout
+                android:id="@+id/promptButtonsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"/>
+                
+        </HorizontalScrollView>
+        
+        <Button
+            android:id="@+id/hidePromptsButton"
+            style="@style/VaakKeyboardButton.Prompt"
+            android:text="@string/btn_hide"/>
+    </LinearLayout>
+
+    <!-- Row 4: Numpad -->
+    <LinearLayout
+        android:id="@+id/numpadRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginTop="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/num1Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/num2Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="2" />
+
+            <Button
+                android:id="@+id/num3Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="3" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/num4Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="4" />
+
+            <Button
+                android:id="@+id/num5Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="5" />
+
+            <Button
+                android:id="@+id/num6Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="6" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/num7Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="7" />
+
+            <Button
+                android:id="@+id/num8Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="8" />
+
+            <Button
+                android:id="@+id/num9Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="9" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/num0Button"
+                style="@style/VaakKeyboardButton.Main"
+                android:text="0" />
+
+            <Button
+                android:id="@+id/hideNumpadButton"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:text="Hide" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
