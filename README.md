@@ -286,20 +286,49 @@ repo in VS Code and choose **Reopen in Container**. It builds from
 `localhost:5555` (VNC at <http://localhost:6080>), and runs
 `.devcontainer/post-create.sh` to connect `adb` to it.
 
-### 7. Project Layout
-
-```
-app/src/main/java/com/aman/vaak/
-├── handlers/      # Android entry points: VaakInputMethodService (the keyboard),
-│                  # VaakSetupActivity (launcher), VaakSettingsActivity, dialogs
-├── managers/      # business logic: DictationManager, WhisperManager (OpenAI),
-│                  # SettingsManager, PromptsManager, BackupManager
-├── models/        # data and state classes
-└── VaakModule.kt  # Hilt dependency injection wiring
-app/src/test/      # JUnit 5 unit tests mirroring the packages above
-```
-
 See `AGENTS.md` for architecture details and testing conventions.
+
+## Project Structure
+
+VaaK is a single-module Android app written in Kotlin. There is no server component:
+the app talks to OpenAI's API directly from the device.
+
+```
+vaak/
+├── app/                 # the only Gradle module (the Android app)
+│   ├── build.gradle.kts # dependencies + Spotless/Detekt/Kover config
+│   └── src/
+│       ├── main/
+│       │   ├── AndroidManifest.xml   # permissions and app components
+│       │   ├── java/com/aman/vaak/
+│       │   │   ├── handlers/         # screens, dialogs and the keyboard service
+│       │   │   ├── managers/         # business logic and system/API access
+│       │   │   ├── models/           # data and state classes
+│       │   │   ├── VaakApplication.kt# app entry point
+│       │   │   └── VaakModule.kt     # Hilt dependency injection wiring
+│       │   └── res/                  # layouts, drawables, strings, IME config
+│       └── test/                     # JUnit 5 unit tests mirroring the packages
+├── .devcontainer/       # VS Code dev container with Android SDK + emulator
+├── .github/workflows/   # CI build and tag-triggered release
+├── docs/images/         # screenshots used in this README
+├── scripts/             # helper scripts (coverage report)
+├── gradle/              # Gradle wrapper and version catalog
+├── Makefile             # every development command (build, test, lint, install)
+└── AGENTS.md            # architecture notes and testing conventions
+```
+
+**What the main folders do**
+
+| Folder | Purpose |
+|---|---|
+| `handlers/` | Everything the user touches. `VaakInputMethodService` is the keyboard itself; `VaakSetupActivity` is the launcher/setup wizard; `VaakSettingsActivity` is the settings screen; the rest are per-feature handlers and dialogs (dictation, text, language, prompts, numpad, backup). |
+| `managers/` | The logic behind the UI. `DictationManager` and `VoiceManager` handle recording, `WhisperManager` and `TranslateManager` call OpenAI, `SettingsManager` stores preferences and the API key encrypted on-device, `PromptsManager`/`BackupManager`/`FileManager` handle JSON files in internal storage. |
+| `models/` | Small data classes shared by both layers, e.g. recording state, keyboard state, languages and prompts. |
+| `res/` | XML layouts and resources, including `res/xml/method.xml` which tells Android this app is a keyboard. |
+| `app/src/test/` | Unit tests (JUnit 5 + Mockito) laid out to mirror the source packages. |
+
+There is no database — settings live in encrypted shared preferences and prompts and
+backups are plain JSON files in the app's internal storage.
 
 ## Support & Feedback
 
