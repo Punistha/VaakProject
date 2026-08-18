@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # VaaK - AI-Powered Voice Keyboard
 
 Transform your typing experience with VaaK, an intelligent Android keyboard that brings the power of AI-driven voice dictation to your fingertips.
@@ -193,6 +192,144 @@ We take your privacy seriously:
 - No user data is collected or shared
 - All permissions are used only for essential functionality
 
+## Development Setup
+
+For contributors who want to build and run VaaK from source.
+
+### 1. Prerequisites
+
+| Requirement | Version | Notes |
+|---|---|---|
+| JDK | 17 | `sourceCompatibility` and `jvmTarget` are both 17 |
+| Android SDK | Platform 34 + Build Tools 34 | `compileSdk`/`targetSdk` are 34, `minSdk` is 24 |
+| Gradle | not needed | the wrapper (`./gradlew`) downloads Gradle 8.11.1 on first run |
+| `make` | any | all workflows are wrapped in the `Makefile` |
+| `adb` | Android platform tools | only needed to install onto a device/emulator |
+
+An Android device or emulator running Android 7.0+ is required to actually use the
+keyboard — there is no desktop or web build.
+
+### 2. Clone and Point at the Android SDK
+
+```bash
+git clone https://github.com/amanhigh/vaak.git
+cd vaak
+chmod +x gradlew
+```
+
+Configure the SDK location using **either** environment variables:
+
+```bash
+export ANDROID_HOME="$HOME/Android/Sdk"    # macOS: $HOME/Library/Android/sdk
+export PATH="$ANDROID_HOME/platform-tools:$PATH"
+```
+
+**or** a `local.properties` file in the repo root (git-ignored, machine specific):
+
+```properties
+sdk.dir=/absolute/path/to/Android/Sdk
+```
+
+If the SDK is not installed yet, the command line tools can fetch it headlessly:
+
+```bash
+sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+sdkmanager --licenses    # licenses must be accepted or the build fails
+```
+
+There are no other environment variables and no `.env` file: the project has no
+backend of its own, and all library dependencies are resolved by Gradle from Google's
+Maven repo and Maven Central on the first build.
+
+### 3. Build, Test and Install
+
+```bash
+make test      # unit tests (JUnit 5 + Mockito)
+make lint      # Detekt static analysis
+make format    # Spotless/ktlint auto-format, run before committing
+make build     # format, then build the APK
+make setup     # test + build + copy APK to ./vaak.apk
+make install   # setup + adb install onto the connected device/emulator
+make cover     # tests + Kover coverage report under app/build/reports/kover
+make help      # list every target
+```
+
+The debug APK lands at `app/build/outputs/apk/debug/app-debug.apk` and is copied to
+`./vaak.apk`. To install it manually: `adb install -r vaak.apk`.
+
+CI runs `make setup`, so a green `make setup` locally means a green build.
+
+### 4. Run It on the Device
+
+VaaK is an input method, so launching it from the app icon only opens the setup
+wizard — the keyboard itself is activated by the system:
+
+1. Launch **VaaK** and follow the setup wizard.
+2. Enable VaaK under *Settings → System → Languages & input → On-screen keyboards*.
+3. Grant the microphone and notification permissions when prompted.
+4. Enter your OpenAI API key in VaaK's settings screen (see below).
+5. Open any text field, pick VaaK from the keyboard selector, and tap the microphone.
+
+### 5. OpenAI API Key
+
+The API key is not a build-time secret and is never stored in the repository. It is
+entered at runtime on the settings screen and persisted on-device with
+`EncryptedSharedPreferences`, so every developer supplies their own key from
+[OpenAI](https://platform.openai.com/api-keys). Dictation and translation fail with an
+invalid-API-key error until one is set.
+
+### 6. Dev Container (optional)
+
+A VS Code dev container with the Android SDK and an emulator is provided: open the
+repo in VS Code and choose **Reopen in Container**. It builds from
+`.devcontainer/Dockerfile`, starts an emulator container reachable over `adb` at
+`localhost:5555` (VNC at <http://localhost:6080>), and runs
+`.devcontainer/post-create.sh` to connect `adb` to it.
+
+See `AGENTS.md` for architecture details and testing conventions.
+
+## Project Structure
+
+VaaK is a single-module Android app written in Kotlin. There is no server component:
+the app talks to OpenAI's API directly from the device.
+
+```
+vaak/
+├── app/                 # the only Gradle module (the Android app)
+│   ├── build.gradle.kts # dependencies + Spotless/Detekt/Kover config
+│   └── src/
+│       ├── main/
+│       │   ├── AndroidManifest.xml   # permissions and app components
+│       │   ├── java/com/aman/vaak/
+│       │   │   ├── handlers/         # screens, dialogs and the keyboard service
+│       │   │   ├── managers/         # business logic and system/API access
+│       │   │   ├── models/           # data and state classes
+│       │   │   ├── VaakApplication.kt# app entry point
+│       │   │   └── VaakModule.kt     # Hilt dependency injection wiring
+│       │   └── res/                  # layouts, drawables, strings, IME config
+│       └── test/                     # JUnit 5 unit tests mirroring the packages
+├── .devcontainer/       # VS Code dev container with Android SDK + emulator
+├── .github/workflows/   # CI build and tag-triggered release
+├── docs/images/         # screenshots used in this README
+├── scripts/             # helper scripts (coverage report)
+├── gradle/              # Gradle wrapper and version catalog
+├── Makefile             # every development command (build, test, lint, install)
+└── AGENTS.md            # architecture notes and testing conventions
+```
+
+**What the main folders do**
+
+| Folder | Purpose |
+|---|---|
+| `handlers/` | Everything the user touches. `VaakInputMethodService` is the keyboard itself; `VaakSetupActivity` is the launcher/setup wizard; `VaakSettingsActivity` is the settings screen; the rest are per-feature handlers and dialogs (dictation, text, language, prompts, numpad, backup). |
+| `managers/` | The logic behind the UI. `DictationManager` and `VoiceManager` handle recording, `WhisperManager` and `TranslateManager` call OpenAI, `SettingsManager` stores preferences and the API key encrypted on-device, `PromptsManager`/`BackupManager`/`FileManager` handle JSON files in internal storage. |
+| `models/` | Small data classes shared by both layers, e.g. recording state, keyboard state, languages and prompts. |
+| `res/` | XML layouts and resources, including `res/xml/method.xml` which tells Android this app is a keyboard. |
+| `app/src/test/` | Unit tests (JUnit 5 + Mockito) laid out to mirror the source packages. |
+
+There is no database — settings live in encrypted shared preferences and prompts and
+backups are plain JSON files in the app's internal storage.
+
 ## Support & Feedback
 
 We're constantly improving VaaK and value your input:
@@ -202,6 +339,3 @@ We're constantly improving VaaK and value your input:
 - Community: Join our discussions and help improve VaaK
 
 *Note: Some features may require specific Android versions or device capabilities.*
-=======
-# VaakProject
->>>>>>> 8609259723d5d4657f4a2bbea73912a24af47404
