@@ -7,9 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 VaaK is an AI-powered Android keyboard app that integrates OpenAI's speech recognition for voice dictation. It's built with Kotlin using modern Android development practices.
 
 ## Development Workflow
+All tasks are [`just`](https://just.systems) recipes defined in the `justfile`; run
+`just --list` to see them.
+
 ### Release Management
-- `make release ver=X.Y.Z` - Create and push release tag (must be on master branch)
-- `make unrelease ver=X.Y.Z` - Remove release tag
+- `just release X.Y.Z` - Create and push release tag (must be on master branch)
+- `just unrelease X.Y.Z` - Remove release tag
 
 ## Architecture Overview
 
@@ -61,8 +64,8 @@ The app extends Android's `InputMethodService` through `VaakInputMethodService`,
 ## Testing
 - Unit tests use JUnit 5 and Mockito
 - Tests are located in `app/src/test/java/com/aman/vaak/`
-- Use `make test` to run the full test suite
-- Use `make cover` to generate coverage reports and analyze test effectiveness
+- Use `just test` to run the full test suite
+- Use `just cover` to generate coverage reports and analyze test effectiveness
 
 ### Testing Best Practices & Common Issues
 Based on implementation experience, follow these patterns:
@@ -116,4 +119,4 @@ Based on implementation experience, follow these patterns:
 - Kotlin code follows ktlint formatting rules
 - Spotless enforces consistent formatting
 - Detekt provides static analysis
-- All formatting rules are applied via `make format`
+- All formatting rules are applied via `just format`
