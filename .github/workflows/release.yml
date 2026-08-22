@@ -33,11 +33,14 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build and Test
-        run: make setup
+        run: just setup
       
       - name: Verify APK exists
         run: |

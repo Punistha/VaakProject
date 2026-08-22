@@ -8,9 +8,13 @@ RUN mkdir -p /workspace/.gradle && \
 RUN apt-get update && apt-get install -y \
     git \
     openssh-client \
-    make \
+    curl \
     android-tools-adb \
     && apt-get clean
+
+# Task runner used by every workflow in the justfile
+RUN curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh \
+    | bash -s -- --to /usr/local/bin
 
 # Use the provided helper script to accept licenses
 RUN /opt/license-accepter.sh

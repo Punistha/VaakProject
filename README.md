@@ -203,7 +203,7 @@ For contributors who want to build and run VaaK from source.
 | JDK | 17 | `sourceCompatibility` and `jvmTarget` are both 17 |
 | Android SDK | Platform 34 + Build Tools 34 | `compileSdk`/`targetSdk` are 34, `minSdk` is 24 |
 | Gradle | not needed | the wrapper (`./gradlew`) downloads Gradle 8.11.1 on first run |
-| `make` | any | all workflows are wrapped in the `Makefile` |
+| [`just`](https://just.systems) | 1.14+ | task runner; every workflow is a recipe in the `justfile` |
 | `adb` | Android platform tools | only needed to install onto a device/emulator |
 
 An Android device or emulator running Android 7.0+ is required to actually use the
@@ -214,7 +214,15 @@ keyboard — there is no desktop or web build.
 ```bash
 git clone https://github.com/amanhigh/vaak.git
 cd vaak
-chmod +x gradlew
+```
+
+Install `just` if you do not have it (see [the install docs](https://just.systems/man/en/packages.html)
+for every platform):
+
+```bash
+brew install just                                     # macOS / Linuxbrew
+cargo install just                                    # any platform with Rust
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
 ```
 
 Configure the SDK location using **either** environment variables:
@@ -244,20 +252,28 @@ Maven repo and Maven Central on the first build.
 ### 3. Build, Test and Install
 
 ```bash
-make test      # unit tests (JUnit 5 + Mockito)
-make lint      # Detekt static analysis
-make format    # Spotless/ktlint auto-format, run before committing
-make build     # format, then build the APK
-make setup     # test + build + copy APK to ./vaak.apk
-make install   # setup + adb install onto the connected device/emulator
-make cover     # tests + Kover coverage report under app/build/reports/kover
-make help      # list every target
+just           # or `just --list`: show every recipe with its description
+just test      # unit tests (JUnit 5 + Mockito)
+just lint      # Detekt static analysis
+just format    # Spotless/ktlint auto-format, run before committing
+just build     # format, then build the APK
+just setup     # test + build + copy APK to ./vaak.apk
+just install   # setup + adb install onto the connected device/emulator
+just cover     # tests + Kover coverage report under app/build/reports/kover
+just clean     # remove ./vaak.apk and clean Gradle outputs
+```
+
+Releases take the version as a recipe argument:
+
+```bash
+just release 1.0.0     # tag v1.0.0 and push it (master branch, clean tree)
+just unrelease 1.0.0   # delete the tag locally and remotely
 ```
 
 The debug APK lands at `app/build/outputs/apk/debug/app-debug.apk` and is copied to
 `./vaak.apk`. To install it manually: `adb install -r vaak.apk`.
 
-CI runs `make setup`, so a green `make setup` locally means a green build.
+CI runs `just setup`, so a green `just setup` locally means a green build.
 
 ### 4. Run It on the Device
 
@@ -313,7 +329,7 @@ vaak/
 ├── docs/images/         # screenshots used in this README
 ├── scripts/             # helper scripts (coverage report)
 ├── gradle/              # Gradle wrapper and version catalog
-├── Makefile             # every development command (build, test, lint, install)
+├── justfile             # every development command (build, test, lint, install)
 └── AGENTS.md            # architecture notes and testing conventions
 ```
 
